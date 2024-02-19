@@ -1,15 +1,12 @@
 package teamcubation.io.taskapi.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import teamcubation.io.taskapi.domain.enums.TaskStatus;
+import teamcubation.io.taskapi.dtos.TaskRequestDto;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "tasks")
+
 public class Task {
 
     @Id
@@ -19,12 +16,57 @@ public class Task {
     private String title;
     @Column(name = "description")
     private String description;
-    @Column(name = "status")
     private TaskStatus status;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    public Task() {
+    }
 
+    public Task(TaskRequestDto taskRequestDto) {
+        this.title = taskRequestDto.title();
+        this.description = taskRequestDto.description();
+        this.user = user;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
