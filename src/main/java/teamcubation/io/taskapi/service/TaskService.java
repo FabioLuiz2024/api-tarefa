@@ -1,5 +1,6 @@
 package teamcubation.io.taskapi.service;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,36 +11,31 @@ import teamcubation.io.taskapi.dtos.TaskResponseDto;
 import teamcubation.io.taskapi.exceptions.TaskNotFoundException;
 import teamcubation.io.taskapi.repository.TaskRepository;
 
+import java.util.List;
+
 
 @Service
+@Data
 public class TaskService {
 
-    @Autowired
-    private  TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
-    @Transactional
-    public TaskResponseDto add(TaskRequestDto taskRequestDto){
-
-        Task task = new Task(taskRequestDto);
-        task.setStatus(TaskStatus.TODO);
-        task.setTitle(taskRequestDto.title());
-        task.setDescription(taskRequestDto.description());
-
-        Task taskSave= taskRepository.save(task);
-        return new TaskResponseDto(taskSave);
-
+    public Task create(TaskRequestDto taskRequestDto){
+        return taskRepository.save(Task.builder()
+                        .status(TaskStatus.TODO)
+                        .title(taskRequestDto.getTitle())
+                        .description(taskRequestDto.getDescription())
+                .build());
      }
 
-    @Transactional
-    public TaskResponseDto update(Long id) {
-        Task task = this.findTask(id);
-
-        Task todoUpdated = taskRepository.save(task);
-
-        return new TaskResponseDto(todoUpdated);
+    public Task update(TaskRequestDto taskRequestDto, Long id) {
+        Task task = taskRepository.findById(taskRequestDto.getId()).orElseThrow(() -> new TaskNotFoundException("Task not found!"));
+        task.setTitle(taskRequestDto.getTitle());
+        task.setDescription(taskRequestDto.getDescription());
+        task.setStatus(taskRequestDto.getStatus());
+        return taskRepository.save(task);
     }
 
-    @Transactional
     public void delete(Long id) {
         Task todo = this.findTask(id);
 
@@ -48,6 +44,10 @@ public class TaskService {
 
     public Task findTask(Long id) {
         return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Tarefa não encontrada!"));
+    }
+
+    public List<Task> findAll(){
+        return taskRepository.findAll();
     }
 
 }

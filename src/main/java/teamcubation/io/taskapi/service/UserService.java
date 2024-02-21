@@ -8,40 +8,42 @@ import teamcubation.io.taskapi.dtos.UserRequestDto;
 import teamcubation.io.taskapi.dtos.UserResponseDto;
 import teamcubation.io.taskapi.repository.UserRepository;
 
+import java.util.List;
+
 @Service
 @Data
+
 public class UserService {
 
     private final UserRepository userRepository;
-    @Transactional
-    public UserResponseDto create(UserRequestDto userRequestDto){
 
-        User user= new User(userRequestDto);
-        user.setName(userRequestDto.name());
-        user.setTeam(userRequestDto.team());
-
-        User userSave= userRepository.save(user);
-        return new UserResponseDto(userSave);
-
+    public User create(UserRequestDto userRequestDto){
+        return userRepository.save(User.builder()
+                        .name(userRequestDto.getName())
+                        .team(userRequestDto.getTeam())
+                .build());
     }
 
-    @Transactional
-    public UserResponseDto update(Long id) {
-        User user= this.fimdUser(id);
-
-        User userUpdated = userRepository.save(user);
-
-        return new UserResponseDto(userUpdated);
+    public User updateUser(UserRequestDto userRequestDto, Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
+        user.setName(userRequestDto.getName());
+        user.setTeam(userRequestDto.getTeam());
+        return userRepository.save(user);
     }
 
-    @Transactional
     public void delete(Long id) {
-        User user = this.fimdUser(id);
+
+        User user = this.findUser(id);
 
         userRepository.delete(user);
     }
 
-    public User fimdUser(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Tarefa não encontrada!"));
+    public User findUser(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
     }
+
+    public List<User> findUserAll(){
+        return userRepository.findAll();
+    }
+
 }

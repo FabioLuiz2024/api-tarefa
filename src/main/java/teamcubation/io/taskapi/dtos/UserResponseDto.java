@@ -1,12 +1,12 @@
 package teamcubation.io.taskapi.dtos;
 
 import lombok.Builder;
-import teamcubation.io.taskapi.domain.User;
+import lombok.Data;
 
 @Builder
-public record UserResponseDto (Long id, String name, String team){
-
-    public UserResponseDto(User user){
-        this(user.getId(), user.getName(), user.getTeam());
-    }
+@Data
+public class UserResponseDto {
+    private Long id;
+    private String name;
+    private String team;
 }
